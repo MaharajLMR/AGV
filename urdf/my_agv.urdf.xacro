@@ -6,8 +6,10 @@
     <xacro:property name="chassis_height" value="0.1"/>
     <xacro:property name="wheel_radius" value="0.08"/> 
     <xacro:property name="wheel_width" value="0.04"/>
-    <xacro:property name="wheel_offset_y" value="0.18"/> 
+    <xacro:property name="wheel_offset_y" value="0.18"/>
     <xacro:property name="wheel_offset_x" value="0.18"/>
+    <xacro:property name="lidar_radius" value="0.03"/>
+    <xacro:property name="lidar_height" value="0.04"/>
 
     <material name="red"><color rgba="1 0 0 1"/></material>
     <material name="black"><color rgba="0 0 0 1"/></material>
@@ -82,18 +84,20 @@
 
     <link name="laser_frame">
         <visual>
-            <geometry><cylinder radius="0.03" length="0.04"/></geometry>
+            <geometry><cylinder radius="${lidar_radius}" length="${lidar_height}"/></geometry>
             <material name="black"/>
         </visual>
-        <xacro:cylinder_inertia m="0.1" r="0.03" h="0.04"/>
+        <xacro:cylinder_inertia m="0.1" r="${lidar_radius}" h="${lidar_height}"/>
     </link>
 
     <joint name="laser_joint" type="fixed">
         <parent link="base_link"/>
         <child link="laser_frame"/>
-        <!-- keep the scan plane level: tilting it makes one side of the 360 deg
-             ring hit the floor, so min(ranges) was always the same 0.94 m -->
-        <origin xyz="0.1 0 0.15" rpy="0 0 0"/>
+        <!-- Sits on the chassis roof. It used to be at a flat 0.15, which left it
+             hanging 0.08 m above the roof with nothing under it.
+             Keep rpy at zero: tilting the scan plane makes one side of the 360 deg
+             ring hit the floor, so min(ranges) was always the same 0.94 m. -->
+        <origin xyz="0.1 0 ${chassis_height/2 + lidar_height/2}" rpy="0 0 0"/>
     </joint>
 
     <gazebo reference="laser_joint">

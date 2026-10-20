@@ -56,6 +56,27 @@ def test_lidar_is_level(urdf):
     assert math.isclose(yaw, 0.0, abs_tol=1e-9)
 
 
+def test_lidar_sits_on_the_chassis(urdf):
+    """Regression: the joint used to be a flat z of 0.15, which left the lidar
+    hanging 0.08 m above the roof with nothing under it."""
+    chassis = urdf.find("link[@name='base_link']/visual/geometry/box").get("size")
+    chassis_height = float(chassis.split()[2])
+    lidar = urdf.find("link[@name='laser_frame']/visual/geometry/cylinder")
+    lidar_height = float(lidar.get("length"))
+
+    z = float(urdf.find("joint[@name='laser_joint']/origin").get("xyz").split()[2])
+    gap = (z - lidar_height / 2) - chassis_height / 2
+    assert gap == pytest.approx(0.0, abs=1e-9), f"lidar floats {gap:.3f} m above the roof"
+
+
+def test_lidar_is_over_the_chassis(urdf):
+    chassis = urdf.find("link[@name='base_link']/visual/geometry/box").get("size")
+    length, width, _ = (float(v) for v in chassis.split())
+    x, y, _ = (float(v) for v in urdf.find("joint[@name='laser_joint']/origin").get("xyz").split())
+    assert abs(x) <= length / 2
+    assert abs(y) <= width / 2
+
+
 def test_lidar_scans_a_full_circle(urdf):
     scan = urdf.find(".//sensor[@name='lidar']/ray/scan/horizontal")
     span = float(scan.find("max_angle").text) - float(scan.find("min_angle").text)
