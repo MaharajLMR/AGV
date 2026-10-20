@@ -18,16 +18,16 @@ Drive wheels are rear. Front wheels have zero friction so they don't fight the d
 ## What's in here
 
 ```
-my_agv_description/
-  urdf/my_agv.urdf.xacro        robot description
-  worlds/my_warehouse.sdf        warehouse with shelves and buckets from Gazebo Fuel
-  worlds/warehouse.sdf           plain empty warehouse
-  worlds/test.sdf                minimal test world
-  launch/display.launch.py       robot in RViz2 with joint state GUI
-  launch/gazebo.launch.py        robot in Gazebo (empty world)
-  launch/my_warehouse.launch.py  robot in my_warehouse.sdf
-  rviz/my_agv.rviz               RViz config for the robot model
-  rviz/my_mapping.rviz           RViz config for lidar + odom
+urdf/my_agv.urdf.xacro        robot description
+worlds/my_warehouse.sdf        warehouse with shelves and buckets from Gazebo Fuel
+worlds/warehouse.sdf           plain empty warehouse
+worlds/test.sdf                minimal test world
+launch/display.launch.py       robot in RViz2 with joint state GUI
+launch/gazebo.launch.py        robot in Gazebo (empty world)
+launch/my_warehouse.launch.py  robot in my_warehouse.sdf
+rviz/my_agv.rviz               RViz config for the robot model
+rviz/my_mapping.rviz           RViz config for lidar + odom
+CMakeLists.txt / package.xml   ROS 2 package (name: my_agv_description)
 ```
 
 ## System diagram
