@@ -236,5 +236,40 @@
       <pose>13.27 6.42 -0.1 0 0 0</pose>
     </include>
 
+    <!-- Two fixed cameras used only to record the demo video. They publish on
+         Gazebo transport, not ROS, so nothing else in the stack sees them.
+         tools/record_demo.py reads /demo/chase and /demo/top. -->
+    <model name="demo_chase_cam">
+      <static>true</static>
+      <pose>-2.6 -2.6 1.4 0 0.17 0.785</pose>
+      <link name="link">
+        <sensor name="chase" type="camera">
+          <update_rate>10</update_rate>
+          <topic>demo/chase</topic>
+          <camera>
+            <horizontal_fov>1.2</horizontal_fov>
+            <image><width>960</width><height>540</height></image>
+            <clip><near>0.1</near><far>60</far></clip>
+          </camera>
+        </sensor>
+      </link>
+    </model>
+
+    <model name="demo_top_cam">
+      <static>true</static>
+      <pose>1.5 1.5 6.5 0 1.5708 1.5708</pose>
+      <link name="link">
+        <sensor name="top" type="camera">
+          <update_rate>10</update_rate>
+          <topic>demo/top</topic>
+          <camera>
+            <horizontal_fov>0.8</horizontal_fov>
+            <image><width>960</width><height>540</height></image>
+            <clip><near>0.1</near><far>60</far></clip>
+          </camera>
+        </sensor>
+      </link>
+    </model>
+
   </world>
 </sdf>
