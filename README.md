@@ -10,6 +10,8 @@ The clip is sped up 4x. Longer version with a top-down view: [docs/agv_demo.mp4]
 
 ## Robot
 
+![the robot in the warehouse world](docs/robot.png)
+
 From `urdf/my_agv.urdf.xacro`:
 
 | | |
@@ -17,17 +19,21 @@ From `urdf/my_agv.urdf.xacro`:
 | Chassis | 0.40 m × 0.30 m × 0.10 m, 1 kg |
 | Wheel radius | 0.08 m, width 0.04 m, 2 kg each |
 | Wheelbase (drive axle) | 0.36 m |
-| Lidar | 360° GPU lidar, 10 Hz, 0.2–12 m range, 0.15 m above the chassis |
+| Lidar | 360° GPU lidar, 10 Hz, 0.2–12 m range, sitting on the chassis roof at 0.17 m |
 
 Drive wheels are at the rear. The front wheels have zero friction so they don't fight the diff-drive plugin, which is a shortcut: a real AGV would have castors.
 
-## Two things that were wrong
+## Three things that were wrong
 
-Both only showed up once I recorded a run and put the live topic values on screen.
+The first two only showed up once I recorded a run and put the live topic values on screen. The third I could see as soon as I looked at the robot properly.
 
 The lidar was mounted with `rpy="0 -0.26 0"`, so the whole 360° scan plane sat at 15°. One side of the ring hit the floor about 0.94 m ahead, and since that was always the closest thing, `min(ranges)` was 0.94 m no matter where the robot was. The scan was useless for seeing obstacles. The joint is level now and the same run reports returns from 3.2 m to 6 m.
 
 `/clock` was bridged with `@`, which is both directions, and the bridge picked ROS to Gazebo. Nothing on the ROS side ever received sim time, so every node was quietly running on wall clock. The bridge entries are explicit now: `[` for Gazebo to ROS, `]` for ROS to Gazebo.
+
+The lidar joint also had a hardcoded z of 0.15, which put the sensor 0.08 m above the chassis roof with nothing holding it up. It floated. The offset is worked out from the chassis and lidar heights now, so it sits flat on the roof and stays there if I change either one.
+
+Each of the three has a test that fails if it comes back.
 
 ## What's in here
 
@@ -113,7 +119,7 @@ The run above covered 15.0 m in 49.9 s of sim time and the closest lidar return 
 
 ## Tests
 
-`python3 -m pytest tests` needs no simulator. It builds the URDF with `xacro` and checks the links, that the drive wheels turn, and that the wheel separation in the joints matches the one the diff-drive plugin is told. Two of them are there because of the bugs above: one fails if the lidar joint is tilted again, one fails if a bridge entry points the wrong way. CI runs the same thing plus `check_urdf` on every push.
+`python3 -m pytest tests` needs no simulator. It builds the URDF with `xacro` and checks the links, that the drive wheels turn, and that the wheel separation in the joints matches the one the diff-drive plugin is told. Three of them are there because of the bugs above: they fail if the lidar is tilted again, if it floats off the roof again, or if a bridge entry points the wrong way. CI runs the same thing plus `check_urdf` on every push.
 
 ## Dependencies
 
