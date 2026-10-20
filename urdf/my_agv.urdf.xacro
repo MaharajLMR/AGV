@@ -91,7 +91,9 @@
     <joint name="laser_joint" type="fixed">
         <parent link="base_link"/>
         <child link="laser_frame"/>
-        <origin xyz="0.1 0 0.15" rpy="0 -0.26 0"/>
+        <!-- keep the scan plane level: tilting it makes one side of the 360 deg
+             ring hit the floor, so min(ranges) was always the same 0.94 m -->
+        <origin xyz="0.1 0 0.15" rpy="0 0 0"/>
     </joint>
 
     <gazebo reference="laser_joint">

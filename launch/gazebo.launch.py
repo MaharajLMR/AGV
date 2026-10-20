@@ -10,8 +10,8 @@ def generate_launch_description():
     pkg_name = 'my_agv_description'
     pkg_share = get_package_share_directory(pkg_name)
 
-    # 1. World Path
-    world_path = os.path.join(pkg_share, 'worlds', 'my_warehouse.sdf')
+    # 1. World Path (the small world, for checking the robot on its own)
+    world_path = os.path.join(pkg_share, 'worlds', 'test.sdf')
 
     # 2. Process URDF
     xacro_file = os.path.join(pkg_share, 'urdf', 'my_agv.urdf.xacro')
@@ -38,7 +38,8 @@ def generate_launch_description():
     spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
-        arguments=['-topic', 'robot_description', '-entity', 'my_agv', '-z', '0.1'],
+        # ros_gz_sim create takes -name, not -entity (that is the old gazebo_ros arg)
+        arguments=['-topic', 'robot_description', '-name', 'my_agv', '-z', '0.1'],
         output='screen'
     )
 
@@ -48,12 +49,13 @@ def generate_launch_description():
         executable='parameter_bridge',
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            '/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-            '/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry',
-            '/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
+            '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
+            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+            '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
             '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
             '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model'
         ],
+        parameters=[{'use_sim_time': True}],
         output='screen'
     )
 
