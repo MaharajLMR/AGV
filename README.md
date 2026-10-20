@@ -1,5 +1,7 @@
 # AGV
 
+[![CI](https://github.com/MaharajLMR/AGV/actions/workflows/ci.yml/badge.svg)](https://github.com/MaharajLMR/AGV/actions/workflows/ci.yml)
+
 A differential-drive AGV in ROS 2 Jazzy and Gazebo Harmonic: red box chassis, four wheels, a 2D lidar on top. I built it to learn how URDF, `ros_gz_bridge` and the diff-drive plugin fit together before starting the fleet simulation project.
 
 ![the AGV driving a 3 m square in the warehouse world](docs/agv_demo.gif)
@@ -43,6 +45,7 @@ tools/run_demo.sh              record one demo run headless
 tools/drive_demo.py            drives the square, closed loop on /odom
 tools/record_demo.py           saves the demo cameras to PNG frames
 tools/make_demo_video.sh       frames to mp4 + gif
+tests/                         pytest checks, no simulator needed
 CMakeLists.txt / package.xml   ROS 2 package (name: my_agv_description)
 ```
 
@@ -107,6 +110,10 @@ The run above covered 15.0 m in 49.9 s of sim time and the closest lidar return 
 | `/scan` | `sensor_msgs/msg/LaserScan` | Gazebo → ROS |
 | `/tf` | `tf2_msgs/msg/TFMessage` | Gazebo → ROS |
 | `/joint_states` | `sensor_msgs/msg/JointState` | Gazebo → ROS |
+
+## Tests
+
+`python3 -m pytest tests` needs no simulator. It builds the URDF with `xacro` and checks the links, that the drive wheels turn, and that the wheel separation in the joints matches the one the diff-drive plugin is told. Two of them are there because of the bugs above: one fails if the lidar joint is tilted again, one fails if a bridge entry points the wrong way. CI runs the same thing plus `check_urdf` on every push.
 
 ## Dependencies
 
